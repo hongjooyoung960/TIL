@@ -3,6 +3,17 @@
 이 문서는 **순서대로 실행**하면 어떤 PC에서도 동일한 로컬 개발 환경을 만들 수 있도록 작성했습니다.  
 비밀값은 Git에 넣지 마세요. **`backend/.env`는 각 PC에서 다시 만듭니다.**
 
+### 집 PC에서 바로 시작 (자동)
+
+저장소를 clone 한 뒤 **루트에서 한 번만**:
+
+```bash
+chmod +x scripts/prepare_home_pc.sh
+./scripts/prepare_home_pc.sh
+```
+
+끝나면 안내에 따라 `DATABASE_URL` 입력 → 마이그레이션 → 서버 실행하면 됩니다.
+
 ---
 
 ## Phase 0 — 옮길 것 / 옮기지 말 것
@@ -12,7 +23,7 @@
 | 코드 | `git clone` 또는 `git pull` |
 | DB 데이터 | Neon 등 **동일한 `DATABASE_URL`** 쓰면 공유됨 |
 | `backend/.env` | **커밋 금지** — 새 PC에서 아래대로 재생성 |
-| 로컬 생성물 `daily/*.json`, `reports/*.md` | 필요하면 Git에 포함하거나 무시 |
+| 로컬 생성물 `daily/*.json`, `reports/*-report.md` | 기본 `.gitignore`로 제외. 같이 올리려면 `.gitignore`에서 해당 줄을 제거한 뒤 커밋 |
 
 체크리스트:
 
@@ -65,7 +76,16 @@ cd productivity-planner
 
 ## Phase 3 — 자동 초기화 (권장)
 
-저장소 **루트**에서:
+저장소 **루트**에서 아래 **둘 중 하나**만 실행하면 됩니다.
+
+**집 PC용 (안내 메시지 포함):**
+
+```bash
+chmod +x scripts/prepare_home_pc.sh
+./scripts/prepare_home_pc.sh
+```
+
+**조용히 같은 작업만:**
 
 ```bash
 chmod +x scripts/setup_dev.sh
@@ -207,6 +227,52 @@ VITE_API_URL=https://내-API-도메인 npm run build
 
 ---
 
+## Phase 9 — GitHub에 올리기 (자동화)
+
+**커밋하면 안 되는 것:** `backend/.env`, API 키, 연결 문자열에 비밀번호가 포함된 값(문서에는 예시만).
+
+### 9.1 GitHub에서 빈 저장소 만들기
+
+- **New repository** → 이름만 지정  
+- **README / .gitignore / license 추가하지 않음** (로컬과 첫 푸시 충돌 방지)
+
+### 9.2 원격 `origin` 연결 (PC마다 한 번)
+
+```bash
+cd /path/to/productivity-planner
+git remote add origin https://github.com/<계정>/<저장소>.git
+```
+
+SSH를 쓰면:
+
+```bash
+git remote add origin git@github.com:<계정>/<저장소>.git
+```
+
+### 9.3 푸시 스크립트 (프로토콜)
+
+저장소 루트에서:
+
+```bash
+chmod +x scripts/git_publish.sh   # 최초 1회
+./scripts/git_publish.sh
+```
+
+현재 브랜치(예: `main`)를 `origin`에 `git push -u` 합니다.
+
+### 9.4 수동 푸시
+
+```bash
+git push -u origin main
+```
+
+체크리스트:
+
+- [ ] `git remote -v` 로 `origin` URL 확인  
+- [ ] `./scripts/git_publish.sh` 또는 `git push` 로 업로드 완료  
+
+---
+
 ## 문제 발생 시 빠른 분류
 
 | 증상 | 점검 |
@@ -222,7 +288,8 @@ VITE_API_URL=https://내-API-도메인 npm run build
 ## 한 줄 요약
 
 ```text
-clone → ./scripts/setup_dev.sh → DATABASE_URL 작성 → alembic upgrade → uvicorn + npm run dev
+clone → ./scripts/prepare_home_pc.sh → DATABASE_URL 입력 → alembic upgrade → uvicorn + npm run dev
+→ (옵션) GitHub origin 등록 → ./scripts/git_publish.sh
 ```
 
 이 순서를 다른 PC에서 그대로 반복하면 같은 개발 환경으로 이어갈 수 있습니다.

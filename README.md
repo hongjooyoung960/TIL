@@ -2,7 +2,9 @@
 
 일간·주간 계획, 목표 계층, 기상/취침 기록, 가중 성취율, 파일 리포트 생성, 로컬 Git 커밋·push까지 포함한 풀스택 MVP입니다.
 
-**다른 PC에서 동일 환경으로 이어하기:** 순서형 체크리스트는 **[docs/setup-protocol.md](docs/setup-protocol.md)** — 저장소 루트에서 `./scripts/setup_dev.sh` 로 자동화 가능한 부분을 한 번에 실행할 수 있습니다.
+**다른 PC에서 동일 환경으로 이어하기:** **[docs/setup-protocol.md](docs/setup-protocol.md)**  
+**집 PC 첫 실행:** `./scripts/prepare_home_pc.sh` (자동 설치 래퍼) → 나머지는 문서 순서대로.  
+**GitHub 푸시:** `origin` 등록 후 `./scripts/git_publish.sh`
 
 > **경로 안내:** 요청하신 Windows 경로는 `C:\work\productivity-planner` 입니다. 이 작업은 macOS 에이전트 환경에서 동일 구조로 생성되었으며, 로컬 경로는 `/Users/skku_aws2_23/work/productivity-planner` 입니다. Windows에서는 해당 폴더를 만들고 이 저장소 내용을 그대로 두면 됩니다.
 
@@ -35,7 +37,7 @@ productivity-planner/
 ├── weekly/            # 향후 확장용 (현재 .gitkeep)
 ├── reports/           # 일별 Markdown 리포트
 ├── docs/              # architecture.md, data_model.md, setup-protocol.md
-├── scripts/           # git_auto_commit.py, setup_dev.sh
+├── scripts/           # prepare_home_pc.sh, setup_dev.sh, git_publish.sh, git_auto_commit.py
 ├── README.md
 └── .gitignore
 ```

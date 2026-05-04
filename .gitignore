@@ -17,6 +17,11 @@ build/
 # Node
 node_modules/
 frontend/dist/
+
+# 로컬 일간 산출물 (폴더는 유지 — 필요 시 아래 줄 제거 후 커밋)
+daily/*.json
+reports/*-report.md
+
 *.log
 npm-debug.log*
 
