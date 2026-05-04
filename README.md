@@ -18,7 +18,7 @@
 |------|------|
 | 프런트엔드 | React 18, Vite, TypeScript, Recharts |
 | 백엔드 | FastAPI, SQLAlchemy 2, Alembic |
-| DB | PostgreSQL |
+| DB | PostgreSQL (**권장: Neon** 호스티드 — 로컬 Postgres 설치 선택) |
 | 설정 | `.env` / `backend/.env.example` |
 
 ## 폴더 구조
@@ -36,15 +36,38 @@ productivity-planner/
 └── .gitignore
 ```
 
-## 사전 준비 — PostgreSQL
+## 사전 준비 — 데이터베이스 (권장: Neon)
 
-1. 데이터베이스 생성 예:
+로컬에 PostgreSQL을 깔지 않아도 되도록 **[Neon](https://neon.tech)**(관리형 PostgreSQL, 무료 티어) 사용을 기준으로 안내합니다. 코드 변경 없이 `DATABASE_URL`만 바꿉니다.
+
+### 1) Neon에서 프로젝트 만들기
+
+1. Neon에 가입 후 **New Project**로 프로젝트를 만듭니다.  
+2. 대시보드 **Connection details**에서 연결 문자열을 복사합니다.  
+3. 문자열 끝에 SSL이 없다면 **`?sslmode=require`** 를 붙입니다.
+
+예시 형태(값은 Neon에서 발급받은 그대로 사용):
+
+```bash
+DATABASE_URL=postgresql://USER:PASSWORD@ep-xxxx.region.aws.neon.tech/neondb?sslmode=require
+```
+
+### 2) 마이그레이션 시 연결 팁
+
+- 대부분은 Neon이 제공하는 기본 URI로 `alembic upgrade head`가 동작합니다.  
+- 연결 타임아웃이 나면 Neon 대시보드의 **직접 연결(Direct)** URI를 복사해 같은 형식으로 `DATABASE_URL`에 넣은 뒤 마이그레이션만 다시 실행해 보세요.
+
+### 3) 로컬 PostgreSQL을 쓰는 경우 (선택)
+
+로컬 서버를 이미 쓰신다면 DB만 만들고 사용자 권한을 맞춘 뒤, 동일하게 `DATABASE_URL`만 설정하면 됩니다.
 
 ```sql
 CREATE DATABASE productivity_planner;
 ```
 
-2. `backend/.env` 에서 `DATABASE_URL` 을 실제 계정에 맞게 수정합니다.
+### 4) `PROJECT_ROOT`
+
+리포트·Git 스크립트가 저장소 루트를 찾도록 **`PROJECT_ROOT`** 에 이 프로젝트 폴더의 **절대 경로**를 넣습니다. (`backend/.env.example` 참고)
 
 ## 백엔드 실행
 
