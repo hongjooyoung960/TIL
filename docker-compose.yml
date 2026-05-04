@@ -15,8 +15,8 @@ services:
       - ./backend/.env
     environment:
       PROJECT_ROOT: /workspace
-      # If using the nginx `web` service on port 8080, add http://localhost:8080 (comma-separated).
-      # CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
+      # SPA가 8080에서 열리므로 기본 허용. 운영에서는 실제 도메인으로 바꾸거나 backend/.env 에 설정.
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
     volumes:
       - .:/workspace:rw
 

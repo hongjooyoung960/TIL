@@ -44,7 +44,7 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ### Docker 이미지
 
-저장소 `backend/Dockerfile` 로 빌드할 수 있습니다(`uvicorn` 은 `--host 0.0.0.0`). 런타임 변수는 `DATABASE_URL`, `PROJECT_ROOT`, `CORS_ORIGINS` 등 `.env.example` 과 동일합니다. SPA와 오리진이 다르면 **`CORS_ORIGINS`** 에 브라우저 접속 오리진을 쉼표로 명시합니다.
+저장소 `backend/Dockerfile` 로 빌드할 수 있습니다(`uvicorn` 은 `--host 0.0.0.0`). 런타임 변수는 `DATABASE_URL`, `PROJECT_ROOT`, `CORS_ORIGINS` 등 `.env.example` 과 동일합니다. SPA와 오리진이 다르면 `**CORS_ORIGINS**` 에 브라우저 접속 오리진을 쉼표로 명시합니다.
 
 API 문서: [http://localhost:8000/docs](http://localhost:8000/docs)
 
