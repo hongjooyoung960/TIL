@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { fetchJson } from "../api/client";
+import { apiUrl, fetchJson } from "../api/client";
 import { ProgressBar } from "../components/ProgressBar";
 import type { Activity, ActivityStatus, DailyPlan, Goal } from "../types";
 import { getIsoWeekAndYear } from "../utils/date";
@@ -14,7 +14,7 @@ function toApiTime(s: string): string | null {
 }
 
 async function loadDailyPlan(date: string): Promise<DailyPlan | null> {
-  const res = await fetch(`/daily/${date}`);
+  const res = await fetch(apiUrl(`/daily/${date}`));
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(await res.text());
   return (await res.json()) as DailyPlan;

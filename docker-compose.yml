@@ -1,0 +1,30 @@
+# Optional local/prod-style stack: API + static frontend.
+# DB: set DATABASE_URL in backend/.env (e.g. Neon). Run migrations from host or: docker compose run --rm api alembic upgrade head
+#
+# Browser must reach the API at the same URL you bake into the web image (VITE_API_URL).
+# Example: web on http://localhost:8080, API on http://localhost:8000 → build arg below.
+#
+# PROJECT_ROOT: repo root is mounted at /workspace so reports/daily/git paths work; override in compose.
+
+services:
+  api:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      PROJECT_ROOT: /workspace
+      # If using the nginx `web` service on port 8080, add http://localhost:8080 (comma-separated).
+      # CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
+    volumes:
+      - .:/workspace:rw
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        # 브라우저가 접속하는 절대 URL (컨테이너 아님). 로컬: API 노출 포트와 일치해야 함.
+        VITE_API_URL: http://localhost:8000
+    ports:
+      - "8080:80"

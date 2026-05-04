@@ -10,6 +10,8 @@ load_dotenv()
 
 app = FastAPI(title="Daily Productivity Planner API", version="0.1.0")
 
+# Comma-separated list, e.g. "https://app.example.com" or "https://app.example.com,http://localhost:5173"
+# SPA on a single origin: set to that origin only (scheme + host + optional port).
 origins = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
 app.add_middleware(
     CORSMiddleware,

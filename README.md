@@ -25,9 +25,10 @@
 
 ```
 productivity-planner/
+├── docker-compose.yml # 선택 — api + 정적 nginx (DB는 비포함)
 ├── package.json       # 루트 스크립트 (예: npm run neon:init)
-├── backend/           # FastAPI, Alembic, 서비스 레이어
-├── frontend/          # React 앱
+├── backend/           # FastAPI, Alembic, Dockerfile
+├── frontend/          # React 앱, Dockerfile
 ├── daily/             # 일별 JSON 산출물
 ├── weekly/            # 향후 확장용 (현재 .gitkeep)
 ├── reports/           # 일별 Markdown 리포트
@@ -104,7 +105,45 @@ npm install
 npm run dev
 ```
 
-브라우저에서 http://localhost:5173 — API는 Vite 프록시를 통해 http://127.0.0.1:8000 으로 전달됩니다.
+브라우저에서 http://localhost:5173 로 접속합니다. 개발 시 API는 동일 출처처럼 **상대 경로**로 두고 `vite.config.ts` 프록시가 `http://127.0.0.1:8000` 으로 넘깁니다. 배포 빌드(`npm run build`)에서는 **`VITE_API_URL`** 에 백엔드 **절대 URL** 이 있으면 그 값이 API 요청 접두사로 들어갑니다(미설정이면 계속 상대 경로).
+
+## 배포
+
+### 필요한 환경 변수 요약
+
+| 변수 | 어디서 | 설명 |
+|------|--------|------|
+| `DATABASE_URL` | 백엔드 | PostgreSQL 연결 문자열(Neon 등). Docker에서도 호스트 등 외부 DB를 가리키면 됩니다. |
+| `PROJECT_ROOT` | 백엔드 | 저장소 루트(`daily/`, `reports/` 포함)의 절대 경로. 리포트·파일/Git 연동 시 필수입니다. **`docker-compose.yml` 예제는 레포 전체를 `/workspace` 에 마운트하고 `PROJECT_ROOT=/workspace` 로 맞춥니다.** 호스트에는 `.:/workspace` 볼륨이 필요합니다. |
+| `CORS_ORIGINS` | 백엔드 | 쉼표로 구분한 **허용 Origin**(스키마+호스트+포트). 단일 도메인에 SPA만 올린 경우 해당 오리진 한 줄이면 충분합니다. 예: `https://플래너.example.com`. Docker Compose로 정적 파일을 `http://localhost:8080` 에 띄우면 `http://localhost:8080` 을 포함하세요(`http://localhost:5173` 만 있으면 CORS 차단됩니다). |
+| `VITE_API_URL` | 프런트 **빌드 시점** | 운영에서 API 호스트와 포트까지 적은 절대 URL(끝 `/` 불필요). 예: `https://api.example.com`. 로컬 Compose 예시에서는 브라우저가 접근하는 값으로 **`http://localhost:8000`**. 빌드에 녹음되므로 API 주소가 바뀌면 프런트 이미지를 다시 빌드해야 합니다. |
+
+### 브라우저에서 열 주소
+
+- **로컬 개발**: `http://localhost:5173`(Vite) + 프록시.
+- **`docker-compose` 로 `web` + `api`**: 정적 페이지 `http://localhost:8080`, API `http://localhost:8000`(프런트는 빌드 시 `VITE_API_URL` 로 이 주소를 사용).
+
+### Docker Compose (선택)
+
+저장소 루트에 `docker-compose.yml` 이 있습니다. DB는 포함하지 않고 **외부**(예: Neon)의 `DATABASE_URL` 을 `backend/.env` 에 두는 형태입니다.
+
+```bash
+# backend/.env 에 DATABASE_URL, CORS_ORIGINS=http://localhost:8080 등 설정 후
+docker compose build
+docker compose run --rm api alembic upgrade head   # 최초 1회(또는 마이그레이션 시)
+docker compose up
+```
+
+컨테이너 안에서 **`PROJECT_ROOT`** 는 마운트된 호스트 레포(`/workspace`)를 가리킵니다. 리포트·Git 커밋은 그 경로 아래 파일을 수정합니다.
+
+**컨테이너·PaaS에서 Git push**: 호스트처럼 `git` 자격증명·SSH가 없으면 실패만 로그로 남을 수 있습니다. 배포 서버에서는 push를 전제하지 않거나, 레포만 별도 마운트/볼륨으로 두고 운영하세요.
+
+### Fly.io / Render 등 API만 호스팅할 때 체크리스트
+
+1. **`DATABASE_URL`**: 해당 플랫폼 비밀/환경 변수로 주입(Neon 등).
+2. **`PROJECT_ROOT`**: 레포 루트를 **영구 볼륨으로 마운트**한 디렉터리와 동일하게 맞추거나, 파일 리포트·Git 기능 없이만 쓰면 경로 불일치에 유의합니다.
+3. **`CORS_ORIGINS`**: 정적 SPA가 올라간 **브라우저 Origin** 과 정확히 일치(HTTPS·포트 포함).
+4. **`VITE_API_URL`**: 정적 SPA를 구축하는 CI/빌드 단계에서, 브라우저가 접속할 공개 API URL로 설정 후 `npm run build`.
 
 ## 주요 HTTP 엔드포인트
 
