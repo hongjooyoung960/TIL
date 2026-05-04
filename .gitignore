@@ -33,3 +33,10 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# TIL 원격 병합 시 추가 (Git 백업 충돌 파일)
+*.orig
+*.BACKUP.*
+*.BASE.*
+*.LOCAL.*
+*.REMOTE.*
