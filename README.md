@@ -25,6 +25,7 @@
 
 ```
 productivity-planner/
+├── package.json       # 루트 스크립트 (예: npm run neon:init)
 ├── backend/           # FastAPI, Alembic, 서비스 레이어
 ├── frontend/          # React 앱
 ├── daily/             # 일별 JSON 산출물
@@ -68,6 +69,19 @@ CREATE DATABASE productivity_planner;
 ### 4) `PROJECT_ROOT`
 
 리포트·Git 스크립트가 저장소 루트를 찾도록 **`PROJECT_ROOT`** 에 이 프로젝트 폴더의 **절대 경로**를 넣습니다. (`backend/.env.example` 참고)
+
+### 5) Neon CLI (`neonctl init`) — IDE·MCP 연동 (선택)
+
+Neon 공식 마법사는 **프로젝트 루트**에서 아래와 같이 실행합니다 (`npx neonctl@latest init` 과 동일).
+
+```bash
+npm run neon:init
+```
+
+- Node.js/npm이 설치되어 있어야 합니다.
+- **브라우저 OAuth·에디터 선택** 등 대화형 단계가 있어, 반드시 **본인 PC 터미널**에서 실행하세요.
+- 생성되는 MCP 설정·에이전트 스킬 등은 [Neon CLI `init` 문서](https://neon.tech/docs/reference/cli-init)를 참고하세요.
+- **`DATABASE_URL`** 은 Neon 콘솔의 연결 문자열을 복사해 `backend/.env`에 넣은 뒤 `alembic upgrade head` 로 스키마를 적용하면 됩니다.
 
 ## 백엔드 실행
 

@@ -4,6 +4,8 @@ FastAPI + SQLAlchemy + Alembic + PostgreSQL.
 
 데이터베이스는 **로컬 Postgres 대신 Neon(호스티드 PostgreSQL)** 사용을 권장합니다. 코드 수정 없이 `DATABASE_URL`만 Neon에서 발급받은 값으로 바꿉니다.
 
+Neon CLI(MCP·스킬 설치 마법사)는 **저장소 루트**에서 `npm run neon:init` (`npx neonctl@latest init` 와 동일) — 대화형이므로 로컬 터미널에서 실행하세요.
+
 ## 준비
 
 1. 가상환경 및 패키지:

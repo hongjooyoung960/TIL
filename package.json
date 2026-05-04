@@ -1,0 +1,8 @@
+{
+  "name": "productivity-planner",
+  "private": true,
+  "description": "Daily Productivity Planner — Neon CLI wizard via npm run neon:init",
+  "scripts": {
+    "neon:init": "npx neonctl@latest init"
+  }
+}
